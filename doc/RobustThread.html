@@ -5,7 +5,7 @@
 <head>
 	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 
-	<title>Module: RobustThread</title>
+	<title>Class: RobustThread</title>
 
 	<link rel="stylesheet" href="./rdoc.css" type="text/css" media="screen" />
 
@@ -19,7 +19,7 @@
 		charset="utf-8"></script>
 
 </head>
-<body class="module">
+<body class="class">
 
 	<div id="metadata">
 		<div id="file-metadata">
@@ -42,6 +42,13 @@
 
 			<!-- Parent Class -->
 			
+			<div id="parent-class-section" class="section">
+				<h3 class="section-header">Parent</h3>
+				
+				<p class="link">Object</p>
+				
+			</div>
+			
 
 			<!-- Namespace Contents -->
 			
@@ -52,9 +59,13 @@
 				<h3 class="section-header">Methods</h3>
 				<ul class="link-list">
 					
-					<li><a href="#M000000">::new</a></li>
+					<li><a href="#M000001">::exception_handler</a></li>
 					
-					<li><a href="#M000000">#new</a></li>
+					<li><a href="#M000003">::handle_exception</a></li>
+					
+					<li><a href="#M000002">::init_exit_handler</a></li>
+					
+					<li><a href="#M000000">::new</a></li>
 					
 				</ul>
 			</div>
@@ -94,7 +105,7 @@
 	</div>
 
 	<div id="documentation">
-		<h1 class="module">RobustThread</h1>
+		<h1 class="class">RobustThread</h1>
 
 		<div id="description">
 			<p>
@@ -121,11 +132,93 @@ exit handler.
 
 		<!-- Attributes -->
 		
+		<div id="attribute-method-details" class="method-section section">
+			<h3 class="section-header">Attributes</h3>
+
+			
+			<div id="thread-attribute-method" class="method-detail">
+				<a name="thread"></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">thread</span><span
+						class="attribute-access-type">[R]</span>
+				</div>
+
+				<div class="method-description">
+				
+				<p>
+The Thread object, brah
+</p>
+				
+				</div>
+			</div>
+			
+			<div id="exception-attribute-method" class="method-detail">
+				<a name="exception"></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">exception</span><span
+						class="attribute-access-type">[R]</span>
+				</div>
+
+				<div class="method-description">
+				
+				<p>
+If the Thread takes a poopie...
+</p>
+				
+				</div>
+			</div>
+			
+		</div>
+		
 
 		<!-- Methods -->
 		
 		<div id="public-class-method-details" class="method-section section">
 			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="exception-handler-method" class="method-detail ">
+				<a name="M000001"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">exception_handler</span><span
+						class="method-args">(&block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Set exception handler:
+</p>
+<pre>
+  RobustThread.exception_handler do |exception|
+    handle_exception(exception)
+  end
+</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="exception-handler-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/robustthread.rb, line 44</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-constant">RobustThread</span>.<span class="ruby-identifier">exception_handler</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+    <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">arity</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;Bad arity for exception handler. It may only accept a single argument&quot;</span>
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-ivar">@@exception_handler</span> = <span class="ruby-identifier">block</span>
+  <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+			</div>
 
 		
 			<div id="new-method" class="method-detail ">
@@ -145,9 +238,17 @@ exit handler.
 Usage:
 </p>
 <pre>
-  RobustThread.new(args) do |x, y|
+  rt = RobustThread.new(args) do |x, y|
     do_something(x, y)
   end
+</pre>
+<p>
+If necessary, you can access the actual thread from the
+<tt>RobustThread</tt> object via its <tt>thread</tt> attribute.
+</p>
+<pre>
+  rt.thread
+  =&gt; #&lt;Thread:0x7fa1ea57ff88 run&gt;
 </pre>
 					
 
@@ -155,13 +256,18 @@ Usage:
 					<div class="method-source-code"
 						id="new-source">
 <pre>
-<span class="ruby-comment cmt"># File lib/robustthread.rb, line 15</span>
-  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
-    <span class="ruby-identifier">thread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-operator">*</span><span class="ruby-identifier">targs</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">targs</span>)
+<span class="ruby-comment cmt"># File lib/robustthread.rb, line 26</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+    <span class="ruby-constant">RobustThread</span>.<span class="ruby-identifier">init_exit_handler</span>
+    <span class="ruby-ivar">@thread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-operator">*</span><span class="ruby-identifier">targs</span><span class="ruby-operator">|</span>
+      <span class="ruby-keyword kw">begin</span>
+        <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">targs</span>)
+      <span class="ruby-keyword kw">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+        <span class="ruby-ivar">@exception</span> = <span class="ruby-identifier">e</span>
+        <span class="ruby-constant">RobustThread</span>.<span class="ruby-identifier">handle_exception</span>(<span class="ruby-identifier">e</span>)
+      <span class="ruby-keyword kw">end</span>
     <span class="ruby-keyword kw">end</span>
-    <span class="ruby-identifier">thread</span>[<span class="ruby-identifier">:real_ultimate_power</span>] = <span class="ruby-keyword kw">true</span>
-    <span class="ruby-identifier">thread</span>
+    <span class="ruby-ivar">@thread</span>[<span class="ruby-identifier">:real_ultimate_power</span>] = <span class="ruby-keyword kw">true</span>
   <span class="ruby-keyword kw">end</span></pre>
 					</div>
 					
@@ -173,17 +279,17 @@ Usage:
 		
 		</div>
 	
-		<div id="private-instance-method-details" class="method-section section">
-			<h3 class="section-header">Private Instance Methods</h3>
+		<div id="private-class-method-details" class="method-section section">
+			<h3 class="section-header">Private Class Methods</h3>
 
 		
-			<div id="new-method" class="method-detail ">
-				<a name="M000000"></a>
+			<div id="handle-exception-method" class="method-detail ">
+				<a name="M000003"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">new</span><span
-						class="method-args">(*args, &block)</span>
+					<span class="method-name">handle_exception</span><span
+						class="method-args">(exception)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
 				</div>
@@ -191,26 +297,59 @@ Usage:
 				<div class="method-description">
 					
 					<p>
-Usage:
+Calls exception handler if set (see <a
+href="RobustThread.html#M000001">RobustThread.exception_handler</a>)
 </p>
-<pre>
-  RobustThread.new(args) do |x, y|
-    do_something(x, y)
-  end
-</pre>
 					
 
 					
 					<div class="method-source-code"
-						id="new-source">
+						id="handle-exception-source">
 <pre>
-<span class="ruby-comment cmt"># File lib/robustthread.rb, line 15</span>
-  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
-    <span class="ruby-identifier">thread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-operator">*</span><span class="ruby-identifier">targs</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">targs</span>)
+<span class="ruby-comment cmt"># File lib/robustthread.rb, line 64</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-constant">RobustThread</span>.<span class="ruby-identifier">handle_exception</span>(<span class="ruby-identifier">exception</span>)
+    <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@@exception_handler</span>
+    <span class="ruby-ivar">@@exception_handler</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">exception</span>)
+  <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+			</div>
+
+		
+			<div id="init-exit-handler-method" class="method-detail ">
+				<a name="M000002"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">init_exit_handler</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Sets up the exit_handler unless @@exit_handler_initialized
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="init-exit-handler-source">
+<pre>
+<span class="ruby-comment cmt"># File lib/robustthread.rb, line 53</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-constant">RobustThread</span>.<span class="ruby-identifier">init_exit_handler</span>
+    <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@@exit_handler_initialized</span>
+    <span class="ruby-identifier">at_exit</span> <span class="ruby-keyword kw">do</span>
+      <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">list</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">thread</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">thread</span>.<span class="ruby-identifier">join</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">thread</span>[<span class="ruby-identifier">:real_ultimate_power</span>]
+      <span class="ruby-keyword kw">end</span>
     <span class="ruby-keyword kw">end</span>
-    <span class="ruby-identifier">thread</span>[<span class="ruby-identifier">:real_ultimate_power</span>] = <span class="ruby-keyword kw">true</span>
-    <span class="ruby-identifier">thread</span>
+    <span class="ruby-ivar">@@exit_handler_initialized</span> = <span class="ruby-keyword kw">true</span>
   <span class="ruby-keyword kw">end</span></pre>
 					</div>
 					

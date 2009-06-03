@@ -5,30 +5,64 @@
 # Copyright:: Copyright (c) 2009 Jared Kuolt
 # License:: MIT License
 
-module RobustThread
+class RobustThread
+  # The Thread object, brah
+  attr_reader :thread
+  # If the Thread takes a poopie...
+  attr_reader :exception
+  @@exit_handler_initialized = false
+  @@exception_handler = nil
   # Usage:
   #
-  #   RobustThread.new(args) do |x, y|
+  #   rt = RobustThread.new(args) do |x, y|
   #     do_something(x, y)
   #   end
   #
-  def new(*args, &block)
-    thread = Thread.new(*args) do |*targs|
-      block.call(*targs)
+  # If necessary, you can access the actual thread from the +RobustThread+
+  # object via its +thread+ attribute.
+  #
+  #   rt.thread
+  #   => #<Thread:0x7fa1ea57ff88 run>
+  def initialize(*args, &block)
+    RobustThread.init_exit_handler
+    @thread = Thread.new(*args) do |*targs|
+      begin
+        block.call(*targs)
+      rescue => e
+        @exception = e
+        RobustThread.handle_exception(e)
+      end
     end
-    thread[:real_ultimate_power] = true
-    thread
+    @thread[:real_ultimate_power] = true
   end
 
-  module_function :new
-end
-
-# We define the BEGUN constant only after we've setup the exit handler
-unless defined? RobustThread::BEGUN
-  at_exit do
-    Thread.list.each do |thread|
-      thread.join if thread[:real_ultimate_power]
+  # Set exception handler:
+  #
+  #   RobustThread.exception_handler do |exception|
+  #     handle_exception(exception)
+  #   end
+  def RobustThread.exception_handler(&block)
+    unless block.arity == 1
+      raise ArgumentError, "Bad arity for exception handler. It may only accept a single argument"
     end
+    @@exception_handler = block
   end
-  RobustThread::BEGUN = true
+
+  private
+  # Sets up the exit_handler unless @@exit_handler_initialized
+  def RobustThread.init_exit_handler
+    return if @@exit_handler_initialized
+    at_exit do
+      Thread.list.each do |thread|
+        thread.join if thread[:real_ultimate_power]
+      end
+    end
+    @@exit_handler_initialized = true
+  end
+
+  # Calls exception handler if set (see RobustThread.exception_handler)
+  def RobustThread.handle_exception(exception)
+    return unless @@exception_handler
+    @@exception_handler.call(exception)
+  end
 end
