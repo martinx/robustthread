@@ -2,10 +2,16 @@ Author:: Jared Kuolt (mailto:me@superjared.com)
 Copyright:: Copyright (c) 2009 Jared Kuolt
 License:: MIT License
 
+= RobustThread
+
 This module allows for the creation of a thread that will not simply die when
 the process dies. Instead, it joins all RobustThreads in Ruby's exit handler.
 
-Usage:
+== Installation
+
+  sudo gem install robustthread
+
+== Usage
 
   rt = RobustThread.new(args) do |x, y|
     do_something(x, y)
