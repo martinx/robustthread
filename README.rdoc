@@ -1,0 +1,34 @@
+Author:: Jared Kuolt (mailto:me@superjared.com)
+Copyright:: Copyright (c) 2009 Jared Kuolt
+License:: MIT License
+
+This module allows for the creation of a thread that will not simply die when
+the process dies. Instead, it joins all RobustThreads in Ruby's exit handler.
+
+Usage:
+
+  rt = RobustThread.new(args) do |x, y|
+    do_something(x, y)
+  end
+
+If necessary, you can access the actual thread from the RobustThread
+object via its +thread+ attribute.
+
+  rt.thread
+  => #<Thread:0x7fa1ea57ff88 run>
+
+By default, RobustThread uses a Logger that defaults itself to STDOUT. You
+can change this by assigning the +logger+ class attribute to a different 
+Logger object:
+
+  RobustThread.logger = Logger.new(STDERR)
+
+Since Threads usually eat exceptions, RobustThread allows for a simple global
+exception handler:
+
+  RobustThread.exception_handler do |exception|
+    # Handle your exceptions here
+  end
+
+If no handler is assigned, the exception traceback will be piped into the
+logger as an error message.
