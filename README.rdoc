@@ -13,9 +13,39 @@ the process dies. Instead, it joins all RobustThreads in Ruby's exit handler.
 
 == Usage
 
-  rt = RobustThread.new(args) do |x, y|
+  rt = RobustThread.new(:args => args, :label => "do_something with x and y") do |x, y|
     do_something(x, y)
   end
+
+Options:
+* +args+: arguments passed to the thread
+* +label+: an identifier (used primarily in logs for debugging, defaults to
+  +thread.inspect+)
+
+=== Easy Looping
+
+You can loop a task in a thread to cleanly exit:
+
+  RobustThread.loop(:seconds => 3) do
+    do_something
+  end
+
+Options are the same as RobustThread#new, with the addition of +seconds+, the
+interval at which the Thread will sleep.
+
+=== Exception Handling
+
+Since Threads usually eat exceptions, RobustThread allows for a simple global
+exception handler:
+
+  RobustThread.exception_handler do |exception|
+    # Handle your exceptions here
+  end
+
+If no handler is assigned, the exception traceback will be piped into the
+logger as an error message.
+
+=== Etc...
 
 If necessary, you can access the actual thread from the RobustThread
 object via its +thread+ attribute.
@@ -28,13 +58,3 @@ can change this by assigning the +logger+ class attribute to a different
 Logger object:
 
   RobustThread.logger = Logger.new(STDERR)
-
-Since Threads usually eat exceptions, RobustThread allows for a simple global
-exception handler:
-
-  RobustThread.exception_handler do |exception|
-    # Handle your exceptions here
-  end
-
-If no handler is assigned, the exception traceback will be piped into the
-logger as an error message.

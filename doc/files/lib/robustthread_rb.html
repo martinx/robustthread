@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Fri Jun 05 16:50:15 -0700 2009</td>
+      <td>Mon Jun 08 14:13:50 -0700 2009</td>
     </tr>
     </table>
   </div>
@@ -80,50 +80,6 @@
 
 </td></tr>
 </table>
-<p>
-This module allows for the creation of a thread that will not simply die
-when the process dies. Instead, it joins all RobustThreads in Ruby&#8216;s
-exit handler.
-</p>
-<p>
-Usage:
-</p>
-<pre>
-  rt = RobustThread.new(args) do |x, y|
-    do_something(x, y)
-  end
-</pre>
-<p>
-If necessary, you can access the actual thread from the <a
-href="../../classes/RobustThread.html">RobustThread</a> object via its
-<tt>thread</tt> attribute.
-</p>
-<pre>
-  rt.thread
-  =&gt; #&lt;Thread:0x7fa1ea57ff88 run&gt;
-</pre>
-<p>
-By default, <a href="../../classes/RobustThread.html">RobustThread</a> uses
-a Logger that defaults itself to STDOUT. You can change this by assigning
-the <tt>logger</tt> class attribute to a different Logger object:
-</p>
-<pre>
-  RobustThread.logger = Logger.new(STDERR)
-</pre>
-<p>
-Since Threads usually eat exceptions, <a
-href="../../classes/RobustThread.html">RobustThread</a> allows for a simple
-global exception handler:
-</p>
-<pre>
-  RobustThread.exception_handler do |exception|
-    # Handle your exceptions here
-  end
-</pre>
-<p>
-If no handler is assigned, the exception traceback will be piped into the
-logger as an error message.
-</p>
 
     </div>
 

@@ -10,9 +10,10 @@
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/robustthread.rb, line 44</span>
-  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+  <pre><span class="ruby-comment cmt"># File lib/robustthread.rb, line 15</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span>={}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">send</span> <span class="ruby-identifier">:init_exit_handler</span>
+    <span class="ruby-identifier">args</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:args</span>] <span class="ruby-keyword kw">or</span> []
     <span class="ruby-ivar">@thread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-operator">*</span><span class="ruby-identifier">targs</span><span class="ruby-operator">|</span>
       <span class="ruby-keyword kw">begin</span>
         <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">targs</span>)
@@ -20,8 +21,10 @@
         <span class="ruby-ivar">@exception</span> = <span class="ruby-identifier">e</span>
         <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">send</span> <span class="ruby-identifier">:handle_exception</span>, <span class="ruby-identifier">e</span>
       <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">log</span> <span class="ruby-node">&quot;#{self.label.inspect} exited cleanly&quot;</span>
     <span class="ruby-keyword kw">end</span>
-    <span class="ruby-ivar">@thread</span>[<span class="ruby-identifier">:real_ultimate_power</span>] = <span class="ruby-keyword kw">true</span>
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">label</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:label</span>] <span class="ruby-operator">||</span> <span class="ruby-ivar">@thread</span>.<span class="ruby-identifier">inspect</span>
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">group</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-keyword kw">self</span>
   <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

@@ -1,37 +1,6 @@
 # Author:: Jared Kuolt (mailto:me@superjared.com)
 # Copyright:: Copyright (c) 2009 Jared Kuolt
 # License:: MIT License
-#
-# This module allows for the creation of a thread that will not simply die when
-# the process dies. Instead, it joins all RobustThreads in Ruby's exit handler.
-#
-# Usage:
-#
-#   rt = RobustThread.new(args) do |x, y|
-#     do_something(x, y)
-#   end
-#
-# If necessary, you can access the actual thread from the RobustThread
-# object via its +thread+ attribute.
-#
-#   rt.thread
-#   => #<Thread:0x7fa1ea57ff88 run>
-#
-# By default, RobustThread uses a Logger that defaults itself to STDOUT. You
-# can change this by assigning the +logger+ class attribute to a different 
-# Logger object:
-#
-#   RobustThread.logger = Logger.new(STDERR)
-#
-# Since Threads usually eat exceptions, RobustThread allows for a simple global
-# exception handler:
-#
-#   RobustThread.exception_handler do |exception|
-#     # Handle your exceptions here
-#   end
-#
-# If no handler is assigned, the exception traceback will be piped into the
-# logger as an error message.
 require 'logger'
 
 class RobustThread
@@ -39,10 +8,13 @@ class RobustThread
   attr_reader :thread
   # If the Thread takes a poopie...
   attr_reader :exception
+  # An identifier
+  attr_accessor :label
 
-  # Create a new RobustThread (see usage)
-  def initialize(*args, &block)
+  # Create a new RobustThread (see README)
+  def initialize(opts={}, &block)
     self.class.send :init_exit_handler
+    args = opts[:args] or []
     @thread = Thread.new(*args) do |*targs|
       begin
         block.call(*targs)
@@ -50,17 +22,41 @@ class RobustThread
         @exception = e
         self.class.send :handle_exception, e
       end
+      self.class.log "#{self.label.inspect} exited cleanly"
     end
-    @thread[:real_ultimate_power] = true
+    self.label = opts[:label] || @thread.inspect
+    self.class.group << self
   end
 
   ## Class methods and attributes
   class << self
-    attr_accessor :logger, :exit_handler_initialized
+    attr_accessor :logger, :say_goodnight, :exit_handler_initialized
 
-    # Logger object (see usage)
+    # Logger object (see README)
     def logger
       @logger ||= Logger.new(STDOUT)
+    end
+
+    # Simple log interface
+    def log(msg, level=:info)
+      self.logger.send level, "#{self}: " + msg
+    end
+
+    # The collection of RobustThread objects
+    def group
+      @group ||= [] 
+    end
+
+    # Loop an activity and exit it cleanly (see README)
+    def loop(opts={}, &block)
+      sleep_seconds = opts.delete(:seconds) || 2
+      self.new(opts) do |*args|
+        Kernel.loop do
+          break if self.say_goodnight
+          block.call(*args)
+          sleep sleep_seconds
+        end
+      end
     end
 
     # Set exception handler
@@ -77,25 +73,25 @@ class RobustThread
       if @exception_handler.is_a? Proc
         @exception_handler.call(exc)
       else
-        self.logger.error("RobustThread: Unhandled exception:\n#{exc.message} " \
-                          "(#{exc.class}): \n\t#{exc.backtrace.join("\n\t")}")
+        log("Unhandled exception:\n#{exc.message} " \
+            "(#{exc.class}): \n\t#{exc.backtrace.join("\n\t")}", :error)
       end
     end
 
     # Sets up the exit_handler unless exit_handler_initialized
     def init_exit_handler
       return if self.exit_handler_initialized
+      self.say_goodnight = false
       at_exit do
+        self.say_goodnight = true
         begin
-          Thread.list.each do |thread|
-            if thread[:real_ultimate_power]
-              logger.info "RobustThread waiting on #{thread.inspect}"
-              thread.join
-            end
+          self.group.each do |rt|
+            log "waiting on #{rt.label.inspect}"
+            rt.thread.join
           end
-          logger.info "RobustThread exited cleanly"
+          log "exited cleanly"
         rescue Interrupt
-          logger.error "RobustThread(s) prematurely killed by interrupt!"
+          log "prematurely killed by interrupt!", :error
         end
       end
       self.exit_handler_initialized = true

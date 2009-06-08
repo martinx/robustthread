@@ -86,8 +86,11 @@
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000003">exception_handler</a>&nbsp;&nbsp;
+      <a href="#M000006">exception_handler</a>&nbsp;&nbsp;
+      <a href="#M000004">group</a>&nbsp;&nbsp;
+      <a href="#M000003">log</a>&nbsp;&nbsp;
       <a href="#M000002">logger</a>&nbsp;&nbsp;
+      <a href="#M000005">loop</a>&nbsp;&nbsp;
       <a href="#M000001">new</a>&nbsp;&nbsp;
       </div>
     </div>
@@ -122,7 +125,20 @@ If the Thread takes a poopie&#8230;
           <td class="context-item-desc"></td>
         </tr>
         <tr class="top-aligned-row context-row">
+          <td class="context-item-name">label</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc">
+An identifier
+
+</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
           <td class="context-item-name">logger</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">say_goodnight</td>
           <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
           <td class="context-item-desc"></td>
         </tr>
@@ -144,12 +160,12 @@ The Thread object, brah
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000003" class="method-detail">
-        <a name="M000003"></a>
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
 
         <div class="method-heading">
-          <a href="RobustThread.src/M000003.html" target="Code" class="method-signature"
-            onclick="popupCode('RobustThread.src/M000003.html');return false;">
+          <a href="RobustThread.src/M000006.html" target="Code" class="method-signature"
+            onclick="popupCode('RobustThread.src/M000006.html');return false;">
           <span class="method-name">exception_handler</span><span class="method-args">(&amp;block)</span>
           </a>
         </div>
@@ -157,6 +173,40 @@ The Thread object, brah
         <div class="method-description">
           <p>
 Set exception handler
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
+
+        <div class="method-heading">
+          <a href="RobustThread.src/M000004.html" target="Code" class="method-signature"
+            onclick="popupCode('RobustThread.src/M000004.html');return false;">
+          <span class="method-name">group</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+The collection of <a href="RobustThread.html">RobustThread</a> objects
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000003" class="method-detail">
+        <a name="M000003"></a>
+
+        <div class="method-heading">
+          <a href="RobustThread.src/M000003.html" target="Code" class="method-signature"
+            onclick="popupCode('RobustThread.src/M000003.html');return false;">
+          <span class="method-name">log</span><span class="method-args">(msg, level=:info)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Simple <a href="RobustThread.html#M000003">log</a> interface
 </p>
         </div>
       </div>
@@ -173,7 +223,24 @@ Set exception handler
       
         <div class="method-description">
           <p>
-Logger object (see usage)
+Logger object (see README)
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000005" class="method-detail">
+        <a name="M000005"></a>
+
+        <div class="method-heading">
+          <a href="RobustThread.src/M000005.html" target="Code" class="method-signature"
+            onclick="popupCode('RobustThread.src/M000005.html');return false;">
+          <span class="method-name">loop</span><span class="method-args">(opts={}, &amp;block)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Loop an activity and exit it cleanly (see README)
 </p>
         </div>
       </div>
@@ -184,14 +251,14 @@ Logger object (see usage)
         <div class="method-heading">
           <a href="RobustThread.src/M000001.html" target="Code" class="method-signature"
             onclick="popupCode('RobustThread.src/M000001.html');return false;">
-          <span class="method-name">new</span><span class="method-args">(*args, &amp;block)</span>
+          <span class="method-name">new</span><span class="method-args">(opts={}, &amp;block)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
 Create a <a href="RobustThread.html#M000001">new</a> <a
-href="RobustThread.html">RobustThread</a> (see usage)
+href="RobustThread.html">RobustThread</a> (see README)
 </p>
         </div>
       </div>
