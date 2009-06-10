@@ -2,6 +2,7 @@
 # Copyright:: Copyright (c) 2009 Jared Kuolt
 # License:: MIT License
 require 'logger'
+require 'timeout'
 
 class RobustThread
   # The Thread object, brah
@@ -54,7 +55,21 @@ class RobustThread
         Kernel.loop do
           break if self.say_goodnight
           block.call(*args)
-          sleep sleep_seconds
+          # We want to sleep for the right amount of time, but we also don't
+          # want to wait until the sleep is done if our exit handler has been
+          # called so we iterate over a loop, sleeping only 0.1 and checking
+          # each iteration whether we need to die, and the timeout is a noop
+          # indicating we need to continue.
+          begin
+            Timeout.timeout(sleep_seconds) do
+              Kernel.loop do
+                break if self.say_goodnight
+                sleep 0.1
+              end
+            end
+          rescue Timeout::Error
+            # OK
+          end
         end
       end
     end
