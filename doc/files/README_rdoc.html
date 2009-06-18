@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Mon Jun 08 14:14:56 -0700 2009</td>
+      <td>Thu Jun 18 13:05:02 -0700 2009</td>
     </tr>
     </table>
   </div>
@@ -137,6 +137,17 @@ global exception handler:
 If no handler is assigned, the exception traceback will be piped into the
 logger as an error message.
 </p>
+<h3>Callbacks</h3>
+<p>
+<a href="../classes/RobustThread.html">RobustThread</a> currently supports
+4 global callbacks:
+</p>
+<pre>
+  RobustThread.add_callback(:before_init){ puts &quot;Before init!&quot; }
+  RobustThread.add_callback(:before_yield){ puts &quot;Before yield!&quot; }
+  RobustThread.add_callback(:after_yield){ puts &quot;After yield!&quot; }
+  RobustThread.add_callback(:after_join){ puts &quot;After join!&quot; }
+</pre>
 <h3>Etc&#8230;</h3>
 <p>
 If necessary, you can access the actual thread from the <a

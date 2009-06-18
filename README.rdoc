@@ -45,6 +45,16 @@ exception handler:
 If no handler is assigned, the exception traceback will be piped into the
 logger as an error message.
 
+=== Callbacks
+
+RobustThread currently supports 4 global callbacks:
+
+  RobustThread.add_callback(:before_init){ puts "Before init!" }
+  RobustThread.add_callback(:before_yield){ puts "Before yield!" }
+  RobustThread.add_callback(:after_yield){ puts "After yield!" }
+  RobustThread.add_callback(:after_join){ puts "After join!" }
+
+
 === Etc...
 
 If necessary, you can access the actual thread from the RobustThread

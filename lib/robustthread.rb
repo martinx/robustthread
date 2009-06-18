@@ -16,9 +16,12 @@ class RobustThread
   def initialize(opts={}, &block)
     self.class.send :init_exit_handler
     args = opts[:args] or []
+    self.class.send :do_before_init
     @thread = Thread.new(*args) do |*targs|
       begin
+        self.class.send :do_before_yield
         block.call(*targs)
+        self.class.send :do_after_yield
       rescue => e
         @exception = e
         self.class.send :handle_exception, e
@@ -31,7 +34,8 @@ class RobustThread
 
   ## Class methods and attributes
   class << self
-    attr_accessor :logger, :say_goodnight, :exit_handler_initialized
+    attr_accessor :logger, :say_goodnight, :exit_handler_initialized, :callbacks
+    VALID_CALLBACKS = [:before_init, :before_yield, :after_yield, :after_join]
 
     # Logger object (see README)
     def logger
@@ -82,6 +86,16 @@ class RobustThread
       @exception_handler = block
     end
 
+    # Add a callback
+    public 
+    def add_callback(sym, &block)
+      sym = sym.to_sym
+      raise ArgumentError, "Invalid callback #{sym.inspect}" unless VALID_CALLBACKS.include? sym
+      self.callbacks ||= {}
+      self.callbacks[sym] ||= []
+      self.callbacks[sym] << block
+    end
+
     private
     # Calls exception handler if set (see RobustThread.exception_handler)
     def handle_exception(exc)
@@ -103,6 +117,7 @@ class RobustThread
           self.group.each do |rt|
             log "waiting on #{rt.label.inspect}"
             rt.thread.join
+            rt.class.send :do_after_join
           end
           log "exited cleanly"
         rescue Interrupt
@@ -110,6 +125,23 @@ class RobustThread
         end
       end
       self.exit_handler_initialized = true
+    end
+
+    def perform_callback(sym)
+      raise ArgumentError, "Cannot perform invalid callback #{sym.inspect}" unless VALID_CALLBACKS.include? sym
+      return unless self.callbacks and self.callbacks[sym]
+      self.callbacks[sym].reverse.each do |callback|
+        callback.call
+      end
+    end
+
+    # Performs callback, if possible
+    def method_missing(sym, *args)
+      if sym.to_s =~ /^do_(.*)$/
+        perform_callback($1.to_sym)
+      else
+        raise NoMethodError, "RobustThread method_missing: #{sym.inspect}"
+      end
     end
   end
 end
