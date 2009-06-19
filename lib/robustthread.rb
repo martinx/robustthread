@@ -1,6 +1,9 @@
 # Author:: Jared Kuolt (mailto:me@superjared.com)
 # Copyright:: Copyright (c) 2009 Jared Kuolt
 # License:: MIT License
+#
+# See README.rdoc[link:files/README_rdoc.html] for usage
+#
 require 'logger'
 require 'timeout'
 
@@ -35,7 +38,7 @@ class RobustThread
   ## Class methods and attributes
   class << self
     attr_accessor :logger, :say_goodnight, :exit_handler_initialized, :callbacks
-    VALID_CALLBACKS = [:before_init, :before_yield, :after_yield, :after_join]
+    VALID_CALLBACKS = [:before_init, :before_yield, :after_yield, :after_join, :before_exit]
 
     # Logger object (see README)
     def logger
@@ -115,10 +118,11 @@ class RobustThread
         self.say_goodnight = true
         begin
           self.group.each do |rt|
-            log "waiting on #{rt.label.inspect}"
+            log "waiting on #{rt.label.inspect}" if rt.thread.alive?
             rt.thread.join
             rt.class.send :do_after_join
           end
+          self.send :do_before_exit
           log "exited cleanly"
         rescue Interrupt
           log "prematurely killed by interrupt!", :error

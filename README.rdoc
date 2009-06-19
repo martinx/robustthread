@@ -47,13 +47,17 @@ logger as an error message.
 
 === Callbacks
 
-RobustThread currently supports 4 global callbacks:
+RobustThread currently supports 5 callbacks. The following 4 are called per
+RobustThread.
 
   RobustThread.add_callback(:before_init){ puts "Before init!" }
   RobustThread.add_callback(:before_yield){ puts "Before yield!" }
   RobustThread.add_callback(:after_yield){ puts "After yield!" }
   RobustThread.add_callback(:after_join){ puts "After join!" }
 
+The +before_exit+ callback is called after all threads are re-joined.
+
+  RobustThread.add_callback(:before_exit){ puts "Before exit!" }
 
 === Etc...
 
